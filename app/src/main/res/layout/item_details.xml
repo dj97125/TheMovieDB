@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/movie_details"
+    app:cardBackgroundColor="@android:color/transparent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:elevation="2dp"
+    android:padding="5dp"
+    app:cardElevation="1dp"
+    app:cardCornerRadius="8dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint_details"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:background="@color/teal_200">
+
+
+        <TextView
+            android:id="@+id/details_original_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/teal_200"
+            tools:textColor="@color/white"
+            android:textSize="30dp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/rate_CV"
+            tools:text="Her" />
+
+        <TextView
+            android:id="@+id/details_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:textColor="@color/teal_200"
+            tools:textColor="@color/white"
+            android:textSize="15dp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/details_over_view"
+            app:layout_constraintTop_toBottomOf="@id/rate_CV"
+            tools:text="Movie Pilot" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/relase_date_CV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/teal_200"
+            android:elevation="2dp"
+            android:padding="5dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="1dp"
+            app:layout_constraintBottom_toTopOf="@+id/details_title"
+            app:layout_constraintTop_toBottomOf="@+id/details_original_title"
+            app:layout_constraintEnd_toStartOf="@+id/languaje_CV"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintVertical_bias="0.60">
+
+            <TextView
+                android:id="@+id/relase_date_TXT"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="15dp"
+                android:textStyle="bold"
+                tools:text="2022" />
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/languaje_CV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:background="@color/teal_200"
+            android:elevation="2dp"
+            android:padding="5dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="1dp"
+            app:layout_constraintBottom_toTopOf="@+id/details_title"
+            app:layout_constraintTop_toBottomOf="@+id/details_original_title"
+            app:layout_constraintStart_toEndOf="@+id/relase_date_CV"
+            app:layout_constraintEnd_toStartOf="@id/rate_CV"
+            app:layout_constraintVertical_bias="0.60">
+
+            <TextView
+                android:id="@+id/languaje_TXT"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="15dp"
+                android:textStyle="bold"
+                tools:text="en" />
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/rate_CV"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:elevation="2dp"
+            android:padding="5dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="1dp"
+            app:layout_constraintBottom_toTopOf="@+id/details_title"
+            app:layout_constraintTop_toBottomOf="@+id/details_original_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/languaje_CV"
+            app:layout_constraintVertical_bias="0.60">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/yellow">
+
+                <TextView
+                    android:id="@+id/rate_TXT"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:gravity="center"
+                    android:textColor="@color/black"
+                    android:textSize="15dp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/rate_IMG"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginStart="15dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    tools:text="4.7" />
+
+                <ImageView
+                    android:id="@+id/rate_IMG"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:gravity="center"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/rate_TXT"
+                    android:layout_marginEnd="15dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:src="@drawable/ic_launcher_star_foreground"
+                    android:textColor="@color/black"
+                    android:textSize="15dp"
+                    android:textStyle="bold" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/details_over_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/teal_200"
+            tools:textColor="@color/white"
+            android:textSize="15dp"
+            android:textStyle="bold"
+            tools:layout_editor_absoluteY="160dp"
+            tools:text="Overview"
+            app:layout_constraintTop_toBottomOf="@id/details_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.cardview.widget.CardView>
+
+
+
+

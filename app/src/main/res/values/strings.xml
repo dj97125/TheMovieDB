@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">NYC_Schools_Test</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="upcoming_movies">Upcoming Movies</string>
+    <string name="top_rated_movies">Top Rated Movies</string>
+    <string name="spanish">Spanish</string>
+    <string name="releases_1993">Releases 1993</string>
+    <string name="your_recomendation">Your Recomendation</string>
+    <string name="emovies">eMovies</string>
+    <string name="releases_2020">releases 2020</string>
+    <string name="japanese">Japanese</string>
+    <string name="releases_2022">Release 2022</string>
+</resources>
