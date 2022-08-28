@@ -11,6 +11,7 @@ import com.example.nyc_schools_test.domain.responses.UpcomingDomain
 import com.example.rappitest.model.remote.upcoming_response.RecomendationDomain
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.*
@@ -28,11 +29,13 @@ class ViewModelTest {
 
     @get:Rule
     var rule = InstantTaskExecutorRule()
-    lateinit var handler: CoroutineExceptionHandler
+
+
     lateinit var subject: ViewModel
     lateinit var upcomingUseCase: UpcomingUseCase
     lateinit var topRatedUseCase: TopRatedUseCase
     lateinit var recomendationUseCase: RecomendationUseCase
+    private val handler = CoroutineExceptionHandler { coroutineContext, throwable -> }
     private val testDispatcher = UnconfinedTestDispatcher()
     private val testScopeCoroutine = TestScope(testDispatcher)
 
@@ -51,24 +54,24 @@ class ViewModelTest {
     }
 
     @Test
-    fun `test everything works`() = runTest(testDispatcher) {
+    fun `test everything works`(){
         testDispatcher.scheduler.advanceTimeBy(2000L)
         Assert.assertTrue(true)
     }
 
     @Test
-    fun `get RECOMENDATION list when fetching data from server returns SUCCESS response`() =
-        runTest(testDispatcher) {
+    fun `get RECOMENDATION list when fetching data from server returns SUCCESS response`(){
             /**
              * Given
              */
             val listRecomendation = listOf(mockk<RecomendationDomain>(relaxed = true))
+            val message = "Data From Network"
 
             every {
                 recomendationUseCase.invoke("ja")
             } returns flowOf(
                 StateAction.SUCCESS(
-                    listOf(listRecomendation)
+                    listOf(listRecomendation), message
                 )
             )
             /**
@@ -77,7 +80,7 @@ class ViewModelTest {
             subject.getRecomendationList("ja")
             var StateActionTestList = mutableListOf<StateAction>()
 
-            val job = launch(handler) {
+            val job = testScopeCoroutine.launch(handler) {
                 supervisorScope {
                     launch {
                         subject.recomendationResponse.observeForever {
@@ -94,18 +97,18 @@ class ViewModelTest {
             val successTest =
                 StateActionTestList.get(0) as StateAction.SUCCESS<List<RecomendationDomain>>
             assertEquals(successTest.response.size, StateActionTestList.size)
+            assertThat(successTest.message).isEqualTo("Data From Network")
 
             job.cancel()
 
         }
 
     @Test
-    fun `get RECOMENDATION list when fetching data from server returns ERROR response`() =
-        runTest(testDispatcher) {
+    fun `get RECOMENDATION list when fetching data from server returns ERROR response`() {
             /**
              * Given
              */
-            every {
+            coEvery {
                 recomendationUseCase.invoke("ja")
             } returns flowOf(
                 StateAction.ERROR(FailedResponseException())
@@ -115,7 +118,7 @@ class ViewModelTest {
              */
             subject.getRecomendationList("ja")
             var StateActionTestList = mutableListOf<StateAction>()
-            val job = launch(handler) {
+            val job = testScopeCoroutine.launch(handler) {
                 supervisorScope {
                     launch {
                         subject.recomendationResponse.observeForever {
@@ -126,87 +129,6 @@ class ViewModelTest {
                 }
             }
 
-            /**
-             * Then
-             */
-            val errorTest =
-                StateActionTestList.get(0) as StateAction.ERROR
-            assertThat(errorTest).isInstanceOf(StateAction.ERROR::class.java)
-
-
-            job.cancel()
-
-        }
-
-    @Test
-    fun `get TOP RATED list when fetching data from server returns SUCCESS response`() =
-        runTest(testDispatcher) {
-            /**
-             * Given
-             */
-            val listTopRated = listOf(mockk<TopRatedDomain>(relaxed = true))
-
-            every {
-                topRatedUseCase.invoke()
-            } returns flowOf(
-                StateAction.SUCCESS(
-                    listOf(listTopRated)
-                )
-            )
-            /**
-             * When
-             */
-            subject.getTopRatedList()
-            var StateActionTestList = mutableListOf<StateAction>()
-            val job = launch(handler) {
-                supervisorScope {
-                    launch {
-                        subject.topRatedResponse.observeForever {
-                            testDispatcher.scheduler.advanceTimeBy(1000L)
-                            StateActionTestList.add(it)
-                        }
-                    }
-                }
-            }
-
-            /**
-             * Then
-             */
-            val successTest =
-                StateActionTestList.get(0) as StateAction.SUCCESS<List<TopRatedDomain>>
-            assertEquals(successTest.response.size, StateActionTestList.size)
-
-            job.cancel()
-
-        }
-
-
-    @Test
-    fun `get TOP RATED list when fetching data from server returns ERROR response`() =
-        runTest(testDispatcher) {
-            /**
-             * Given
-             */
-            every {
-                topRatedUseCase.invoke()
-            } returns flowOf(
-                StateAction.ERROR(FailedResponseException())
-            )
-            /**
-             * When
-             */
-            subject.getTopRatedList()
-            var StateActionTestList = mutableListOf<StateAction>()
-            val job = launch(handler) {
-                supervisorScope {
-                    launch {
-                        subject.topRatedResponse.observeForever {
-                            testDispatcher.scheduler.advanceTimeBy(1000L)
-                            StateActionTestList.add(it)
-                        }
-                    }
-                }
-            }
 
             /**
              * Then
@@ -214,91 +136,173 @@ class ViewModelTest {
             val errorTest =
                 StateActionTestList.get(0) as StateAction.ERROR
             assertThat(errorTest).isInstanceOf(StateAction.ERROR::class.java)
-
+            assertThat(errorTest.error.message).isEqualTo("Error: failure in the response")
             job.cancel()
 
         }
 
     @Test
-    fun `get UPCOMING list when fetching data from server returns SUCCESS response`() =
-        runTest(testDispatcher) {
-            /**
-             * Given
-             */
-            val listUpcoming = listOf(mockk<UpcomingDomain>(relaxed = true))
+    fun `get TOP RATED list when fetching data from server returns SUCCESS response`() {
+        /**
+         * Given
+         */
+        val listTopRated = listOf(mockk<TopRatedDomain>(relaxed = true))
+        val message = "Data From Network"
 
-            every {
-                upcomingUseCase.invoke()
-            } returns flowOf(
-                StateAction.SUCCESS(
-                    listOf(listUpcoming)
-                )
+        coEvery {
+            topRatedUseCase.invoke()
+        } returns flowOf(
+            StateAction.SUCCESS(
+                listOf(listTopRated), message
             )
-            /**
-             * When
-             */
-            subject.getUpcomingList()
-            var StateActionTestList = mutableListOf<StateAction>()
-            val job = launch(handler) {
-                supervisorScope {
-                    launch {
-                        subject.upcomingResponse.observeForever {
-                            testDispatcher.scheduler.advanceTimeBy(1000L)
-                            StateActionTestList.add(it)
-                        }
+        )
+        /**
+         * When
+         */
+        subject.getTopRatedList()
+        var StateActionTestList = mutableListOf<StateAction>()
+        val job = testScopeCoroutine.launch(handler) {
+            supervisorScope {
+                launch {
+                    subject.topRatedResponse.observeForever {
+                        testDispatcher.scheduler.advanceTimeBy(1000L)
+                        StateActionTestList.add(it)
                     }
                 }
             }
-
-            /**
-             * Then
-             */
-            val successTest =
-                StateActionTestList.get(0) as StateAction.SUCCESS<List<UpcomingDomain>>
-            assertEquals(successTest.response.size, StateActionTestList.size)
-
-            job.cancel()
-
         }
+
+        /**
+         * Then
+         */
+        val successTest =
+            StateActionTestList.get(0) as StateAction.SUCCESS<List<TopRatedDomain>>
+        assertEquals(successTest.response.size, StateActionTestList.size)
+        assertThat(successTest.message).isEqualTo("Data From Network")
+
+        job.cancel()
+
+    }
 
 
     @Test
-    fun `get UPCOMING list when fetching data from server returns ERROR response`() =
-        runTest(testDispatcher) {
-            /**
-             * Given
-             */
-            every {
-                upcomingUseCase.invoke()
-            } returns flowOf(
-                StateAction.ERROR(FailedResponseException())
-            )
-            /**
-             * When
-             */
-            subject.getUpcomingList()
-            var StateActionTestList = mutableListOf<StateAction>()
-            val job = launch(handler) {
-                supervisorScope {
-                    launch {
-                        subject.upcomingResponse.observeForever {
-                            testDispatcher.scheduler.advanceTimeBy(1000L)
-                            StateActionTestList.add(it)
-                        }
+    fun `get TOP RATED list when fetching data from server returns ERROR response`() {
+        /**
+         * Given
+         */
+        coEvery { topRatedUseCase.invoke() } returns flowOf(
+            StateAction.ERROR(FailedResponseException())
+        )
+        /**
+         * When
+         */
+        subject.getTopRatedList()
+        var StateActionTestList = mutableListOf<StateAction>()
+        val job = testScopeCoroutine.launch(handler) {
+            supervisorScope {
+                launch {
+                    subject.topRatedResponse.observeForever {
+                        testDispatcher.scheduler.advanceTimeBy(1000L)
+                        StateActionTestList.add(it)
                     }
                 }
             }
-
-            /**
-             * Then
-             */
-            val errorTest =
-                StateActionTestList.get(0) as StateAction.ERROR
-            assertThat(errorTest).isInstanceOf(StateAction.ERROR::class.java)
-
-            job.cancel()
-
         }
+
+        /**
+         * Then
+         */
+        val errorTest = StateActionTestList.get(0) as StateAction.ERROR
+
+        assertThat(errorTest).isInstanceOf(StateAction.ERROR::class.java)
+        assertThat(errorTest.error.message).isEqualTo("Error: failure in the response")
+
+
+        job.cancel()
+
+    }
+
+    @Test
+    fun `get UPCOMING list when fetching data from server returns SUCCESS response`() {
+        /**
+         * Given
+         */
+        val listUpcoming = listOf(mockk<UpcomingDomain>(relaxed = true))
+        val message = "Error: failure in the response"
+
+        coEvery {
+            upcomingUseCase.invoke()
+        } returns flowOf(
+            StateAction.SUCCESS(
+                listOf(listUpcoming), message
+            )
+        )
+        /**
+         * When
+         */
+        subject.getUpcomingList()
+        var StateActionTestList = mutableListOf<StateAction>()
+        val job = testScopeCoroutine.launch(handler) {
+            supervisorScope {
+                launch {
+                    subject.upcomingResponse.observeForever {
+                        testDispatcher.scheduler.advanceTimeBy(1000L)
+                        StateActionTestList.add(it)
+                    }
+                }
+            }
+        }
+
+        /**
+         * Then
+         */
+        val successTest =
+            StateActionTestList.get(0) as StateAction.SUCCESS<List<UpcomingDomain>>
+        assertEquals(successTest.response.size, StateActionTestList.size)
+        assertThat(successTest.message).isEqualTo("Error: failure in the response")
+
+        job.cancel()
+
+    }
+
+
+    @Test
+    fun `get UPCOMING list when fetching data from server returns ERROR response`() {
+        /**
+         * Given
+         */
+        coEvery {
+            upcomingUseCase.invoke()
+        } returns flowOf(
+            StateAction.ERROR(FailedResponseException())
+        )
+        /**
+         * When
+         */
+        subject.getUpcomingList()
+        var StateActionTestList = mutableListOf<StateAction>()
+        val job = testScopeCoroutine.launch(handler) {
+            supervisorScope {
+                launch {
+                    subject.upcomingResponse.observeForever {
+                        testDispatcher.scheduler.advanceTimeBy(1000L)
+                        StateActionTestList.add(it)
+                    }
+                }
+            }
+        }
+
+        /**
+         * Then
+         */
+        val errorTest =
+            StateActionTestList.get(0) as StateAction.ERROR
+        assertThat(errorTest).isInstanceOf(StateAction.ERROR::class.java)
+        assertThat(errorTest.error.message).isEqualTo("Error: failure in the response")
+
+        job.cancel()
+
+    }
 
 
     @After
