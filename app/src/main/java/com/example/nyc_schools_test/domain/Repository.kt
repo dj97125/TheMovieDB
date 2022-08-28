@@ -31,8 +31,9 @@ class RepositoryImpl @Inject constructor(
             remoteService.collect { stateAction ->
                 when (stateAction) {
                     is StateAction.SUCCESS<*> -> {
+                        val retrievedMessage = stateAction.message
                         val retrievedUpcoming = stateAction.response as List<UpcomingDomain>
-                        emit(StateAction.SUCCESS(retrievedUpcoming))
+                        emit(StateAction.SUCCESS(retrievedUpcoming,retrievedMessage))
                         localDataSource.insertUpcoming(retrievedUpcoming).collect()
 
                     }
@@ -47,8 +48,9 @@ class RepositoryImpl @Inject constructor(
             cache.collect { stateAction ->
                 when (stateAction) {
                     is StateAction.SUCCESS<*> -> {
+                        val retrievedMessage = stateAction.message
                         val retrievedUpcoming = stateAction.response as List<UpcomingDomain>
-                        emit(StateAction.SUCCESS(retrievedUpcoming))
+                        emit(StateAction.SUCCESS(retrievedUpcoming,retrievedMessage))
                     }
                     is StateAction.ERROR -> {
                         emit(StateAction.ERROR(FailedResponseException()))
@@ -65,8 +67,9 @@ class RepositoryImpl @Inject constructor(
             remoteService.collect { stateAction ->
                 when (stateAction) {
                     is StateAction.SUCCESS<*> -> {
+                        val retrievedMessage = stateAction.message
                         val retrievedTopRated = stateAction.response as List<TopRatedDomain>
-                        emit(StateAction.SUCCESS(retrievedTopRated))
+                        emit(StateAction.SUCCESS(retrievedTopRated,retrievedMessage))
                         localDataSource.insertTopRated(retrievedTopRated).collect()
 
                     }
@@ -80,8 +83,9 @@ class RepositoryImpl @Inject constructor(
             cache.collect { stateAction ->
                 when (stateAction) {
                     is StateAction.SUCCESS<*> -> {
+                        val retrievedMessage = stateAction.message
                         val retrievedTopRated = stateAction.response as List<TopRatedDomain>
-                        emit(StateAction.SUCCESS(retrievedTopRated))
+                        emit(StateAction.SUCCESS(retrievedTopRated,retrievedMessage))
                     }
                     is StateAction.ERROR -> {
                         emit(StateAction.ERROR(FailedResponseException()))
@@ -98,18 +102,19 @@ class RepositoryImpl @Inject constructor(
             remoteService.collect { stateAction ->
                 when (stateAction) {
                     is StateAction.SUCCESS<*> -> {
+                        val retrievedMessage = stateAction.message
                         val retrievedRecomendation =
                             stateAction.response as List<RecomendationDomain>
                         localDataSource.insertRecomendation(retrievedRecomendation).collect()
                         if (response == "ja") {
                             emit(StateAction.SUCCESS(retrievedRecomendation.filter { x ->
                                 x.originalLanguage == response
-                            }))
+                            },retrievedMessage))
                         }
                         if (response == "2022") {
                             emit(StateAction.SUCCESS(retrievedRecomendation.filter { x ->
                                 x.releaseDate.take(4) == response
-                            }))
+                            },retrievedMessage))
                         }
                     }
                     is StateAction.ERROR -> {
@@ -122,17 +127,18 @@ class RepositoryImpl @Inject constructor(
             cache.collect { stateAction ->
                 when (stateAction) {
                     is StateAction.SUCCESS<*> -> {
+                        val retrievedMessage = stateAction.message
                         val retrievedRecomendation =
                             stateAction.response as List<RecomendationDomain>
                         if (response == "ja") {
                             emit(StateAction.SUCCESS(retrievedRecomendation.filter { x ->
                                 x.originalLanguage == response
-                            }))
+                            },retrievedMessage))
                         }
                         if (response == "2022") {
                             emit(StateAction.SUCCESS(retrievedRecomendation.filter { x ->
                                 x.releaseDate.take(4) == response
-                            }))
+                            },retrievedMessage))
                         }
                     }
                     is StateAction.ERROR -> {

@@ -27,4 +27,7 @@ open class BaseFragment : Fragment() {
             .create()
             .show()
     }
+
+    fun showToastMessage(message: String) =
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
 }

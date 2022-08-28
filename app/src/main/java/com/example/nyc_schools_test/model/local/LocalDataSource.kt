@@ -41,21 +41,21 @@ class LocalDataSourceImpl @Inject constructor(
     override fun getAllRecomendation(): Flow<StateAction> = flow {
         val cache = moviesDao.getAllRecomendation()
         cache.let {
-            emit(StateAction.SUCCESS(cache.map { it.toDomainRecomendationModel() }))
+            emit(StateAction.SUCCESS(cache.map { it.toDomainRecomendationModel() }, ""))
         }
     }
 
     override fun getAllUpcoming(): Flow<StateAction> = flow {
         val cache = moviesDao.getAllUpcoming()
         cache.let {
-            emit(StateAction.SUCCESS(cache.map { it.toDomainUpcomingModel() }))
+            emit(StateAction.SUCCESS(cache.map { it.toDomainUpcomingModel() }, "Data From Cache"))
         }
     }
 
     override fun getAllTopRated(): Flow<StateAction> = flow {
         val cache = moviesDao.getAllTopRated()
         cache.let {
-            emit(StateAction.SUCCESS(cache.map { it.toDomainTopRatedModel() }))
+            emit(StateAction.SUCCESS(cache.map { it.toDomainTopRatedModel() }, "Data From Cache"))
         }
     }
 

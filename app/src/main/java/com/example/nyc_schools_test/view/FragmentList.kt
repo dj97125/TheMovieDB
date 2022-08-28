@@ -82,6 +82,8 @@ class FragmentList : BaseFragment(), OnMovieClicked {
         viewModel.upcomingResponse.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is StateAction.SUCCESS<*> -> {
+                    val retrievedMessage = state.message
+                    showToastMessage(retrievedMessage)
                     val retrievedUpcomings = state.response as List<UpcomingDomain>
                     binding.apply {
                         swipeRefresh.visibility = View.VISIBLE
@@ -105,6 +107,8 @@ class FragmentList : BaseFragment(), OnMovieClicked {
         viewModel.topRatedResponse.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is StateAction.SUCCESS<*> -> {
+                    val retrievedMessage = state.message
+                    showToastMessage(retrievedMessage)
                     val retrievedTopRated = state.response as List<TopRatedDomain>
                     binding.apply {
                         swipeRefresh.visibility = View.VISIBLE

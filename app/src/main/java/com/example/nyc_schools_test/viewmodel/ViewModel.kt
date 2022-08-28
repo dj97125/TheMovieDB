@@ -46,15 +46,8 @@ class ViewModel @Inject constructor(
     init {
         getUpcomingList()
         getTopRatedList()
-        splash()
     }
 
-    fun splash() {
-        coroutineScope.launch() {
-            delay(3000)
-            _isLoading.value = false
-        }
-    }
 
 
     fun getRecomendationList(response: String) {
@@ -75,6 +68,7 @@ class ViewModel @Inject constructor(
                 launch {
                     topRatedUseCase().collect {
                         _topRatedResponse.postValue(it)
+                        _isLoading.value = false
                     }
                 }
             }

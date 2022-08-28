@@ -1,6 +1,5 @@
 package com.example.nyc_schools_test.model.remote
 
-import android.util.Log
 import com.example.nyc_schools_test.common.FailedResponseException
 import com.example.nyc_schools_test.common.NullResponseException
 import com.example.nyc_schools_test.common.StateAction
@@ -29,8 +28,12 @@ class RemoteDataSourceImpl @Inject constructor(
         val respose = service.getRecomendationList()
         if (respose.isSuccessful) {
             respose.body()?.let { result ->
-                emit(StateAction.SUCCESS(result.results.toDomainRecomendationModel()))
-                Log.d("remote", "RecomendationCatched: $result")
+                emit(
+                    StateAction.SUCCESS(
+                        result.results.toDomainRecomendationModel(),
+                        ""
+                    )
+                )
             } ?: throw NullResponseException()
         } else {
             throw FailedResponseException()
@@ -42,8 +45,12 @@ class RemoteDataSourceImpl @Inject constructor(
         val respose = service.getUpcomingList()
         if (respose.isSuccessful) {
             respose.body()?.let { result ->
-                emit(StateAction.SUCCESS(result.results.toDomainUpcomingModel()))
-                Log.d("remote", "UpcomingCatched: $result")
+                emit(
+                    StateAction.SUCCESS(
+                        result.results.toDomainUpcomingModel(),
+                        "Data From Network"
+                    )
+                )
             } ?: throw NullResponseException()
         } else {
             throw FailedResponseException()
@@ -55,8 +62,12 @@ class RemoteDataSourceImpl @Inject constructor(
         val respose = service.getTopRatedList()
         if (respose.isSuccessful) {
             respose.body()?.let { result ->
-                emit(StateAction.SUCCESS(result.results.toDomainTopRatedModel()))
-                Log.d("remote", "TopRatedCatched: $result")
+                emit(
+                    StateAction.SUCCESS(
+                        result.results.toDomainTopRatedModel(),
+                        "Data From Network"
+                    )
+                )
             } ?: throw NullResponseException()
         } else {
             throw FailedResponseException()
